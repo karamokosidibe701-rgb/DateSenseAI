@@ -3,63 +3,106 @@ import streamlit as st
 from datetime import date
 
 st.set_page_config(
-    page_title="DateSenseAI",
+    page_title="DateSenseAI | Birthday Countdown",
     page_icon="🎂",
     layout="centered"
 )
 
-st.title("🎂 DateSenseAI")
-st.subheader("Combien de jours avant ton prochain anniversaire ?")
+# Style visuel
+st.markdown("""
+<style>
+.stApp {
+    background: linear-gradient(135deg, #f5f3ff, #eff6ff);
+}
+.block-container {
+    max-width: 750px;
+    padding-top: 3rem;
+}
+.hero {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+.hero h1 {
+    color: #4338ca;
+    font-size: 3rem;
+    margin-bottom: 0.4rem;
+}
+.hero p {
+    color: #475569;
+    font-size: 1.1rem;
+}
+.result {
+    background: white;
+    border: 1px solid #e0e7ff;
+    border-radius: 20px;
+    padding: 2rem 1rem;
+    text-align: center;
+    margin-top: 1rem;
+    box-shadow: 0 8px 25px rgba(67, 56, 202, 0.08);
+}
+.days {
+    color: #4338ca;
+    font-size: 3.2rem;
+    font-weight: 800;
+}
+</style>
+""", unsafe_allow_html=True)
 
-st.write(
-    "Entre ta date de naissance pour découvrir "
-    "ton compte à rebours personnalisé."
-)
+st.markdown("""
+<div class="hero">
+    <h1>🎂 DateSenseAI</h1>
+    <p>Every birthday deserves a countdown.</p>
+    <p>Discover how many days remain until your next birthday.</p>
+</div>
+""", unsafe_allow_html=True)
+
+st.divider()
+
+st.subheader("🎈 Your birthday")
 
 naissance = st.date_input(
-    "Ta date de naissance",
+    "Select your date of birth",
     value=date(2000, 1, 1),
     min_value=date(1900, 1, 1),
     max_value=date.today(),
     format="DD/MM/YYYY"
 )
 
-if st.button("Calculer mon compte à rebours"):
-    aujourd_hui = date.today()
+if st.button("✨ Calculate my countdown", use_container_width=True):
+    today = date.today()
 
-    # Calculer le prochain anniversaire
     try:
-        anniversaire = date(
-            aujourd_hui.year,
-            naissance.month,
-            naissance.day
-        )
+        birthday = date(today.year, naissance.month, naissance.day)
     except ValueError:
-        # Cas d'une naissance le 29 février
-        anniversaire = date(aujourd_hui.year, 2, 28)
+        birthday = date(today.year, 2, 28)
 
-    # Si l'anniversaire est aujourd'hui ou déjà passé,
-    # chercher celui de l'année suivante
-    if anniversaire <= aujourd_hui:
+    if birthday <= today:
         try:
-            anniversaire = date(
-                aujourd_hui.year + 1,
-                naissance.month,
-                naissance.day
-            )
+            birthday = date(today.year + 1, naissance.month, naissance.day)
         except ValueError:
-            anniversaire = date(aujourd_hui.year + 1, 2, 28)
+            birthday = date(today.year + 1, 2, 28)
 
-    jours_restants = (anniversaire - aujourd_hui).days
+    days_left = (birthday - today).days
+    age_next = birthday.year - naissance.year
 
-    st.success(f"🎉 Il te reste {jours_restants} jour(s) !")
+    st.markdown(f"""
+    <div class="result">
+        <div style="font-size: 2.5rem;">🎉</div>
+        <div class="days">{days_left} days</div>
+        <div style="color: #475569; font-size: 1.1rem;">
+            until your next birthday
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.write(
-        "Ton prochain anniversaire sera le "
-        f"{anniversaire.strftime('%d/%m/%Y')}."
+    st.success(
+        f"Your next birthday is on {birthday.strftime('%d/%m/%Y')}."
     )
+    st.info(f"You will turn {age_next} years old!")
+
+st.divider()
 
 st.caption(
-    "DateSenseAI — Un projet Python autour des dates "
-    "et du machine learning."
+    "DateSenseAI | Built with Python and Streamlit | A learning project"
 )
+
